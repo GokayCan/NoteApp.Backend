@@ -1,0 +1,5 @@
+python manage.py runserver // server'ı runlamak için
+python manage.py startapp isim // class lib oluşturmak için
+python manage.py makemigrations // migration commiti
+python manage.py migrate // migration push
+python manage.py createsuperuser //admin panele admin ekleme
