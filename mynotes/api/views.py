@@ -1,12 +1,15 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from api.models import Note
-from api.serializer import NoteSerializer
+from .utils import *
+from django.http import HttpRequest
+from .models import Note
+from .serializers import NoteSerializer
 
 @api_view(['GET'])
-def getRoute(request):
+def getRoutes(request):
     routes = [
         {
             'Endpoint': '/notes/',
@@ -41,31 +44,51 @@ def getRoute(request):
     ]
     return Response(routes)
 
-@api_view(['GET'])
-def getNotes(request):
-    try:
-        notes = Note.objects.all()
-        serialized_notes = NoteSerializer(notes, many=True).data
-        return Response(serialized_notes)
-    except:
-        return Response({'message': 'No notes found'})
+# /notes GET
+# /notes POST
+# /notes/<id> GET
+# /notes/<id> PUT
+# /notes/<id> DELETE
 
 @api_view(['GET'])
-def getNote(request,id):
-    # if you want to use query params instead of url params
-    # id = request.query_params['id']
-    try:
-        note = Note.objects.get(id=id)
-        serialized_notes = NoteSerializer(note, many=False).data
-        return Response({'notes': serialized_notes})
-    except:
-        return Response({'message': 'Note not found'})
+def getNotes(request):
+    notes = Note.objects.all().order_by('-updated')
+    serializer = NoteSerializer(notes, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def getNote(request, pk):
+    notes = Note.objects.get(id=pk)
+    serializer = NoteSerializer(notes, many=False)
+    return Response(serializer.data)
     
 @api_view(['POST'])
-def createNote (request):
+def createNote(request):
     data = request.data
+    print('DATA:', data)
     note = Note.objects.create(
-        body = data['body']
+        body=data['body']
     )
-    serialized_note = NoteSerializer(note, many=False).data
-    return Response(serialized_note)
+    serializer = NoteSerializer(note, many=False)
+    return Response('Note was created!')
+
+
+@api_view(['PUT'])
+def updateNote(request, pk):
+    data = request.data
+    print('DATA:', data)
+    note = Note.objects.get(id=pk)
+    serializer = NoteSerializer(instance=note, data=data)
+
+    if serializer.is_valid():
+        serializer.save()
+
+    return Response('Note was updated!')
+
+
+@api_view(['DELETE'])
+def deleteNote(request, pk):
+    note = Note.objects.get(id=pk)
+    note.delete()
+    return Response('Note was deleted!')

@@ -26,6 +26,14 @@ SECRET_KEY = 'django-insecure-9wnvu8w7cebz58s()qvetfbz_1lr87*@i1%)br9yko(7g*ervb
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = [
+'http://localhost:3000'
+]
+CORS_ORIGIN_WHITELIST = [
+'http://localhost:3000',
+]
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Application definition
@@ -126,5 +134,3 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-CORS_ALLOW_ALL_ORIGINS = True
